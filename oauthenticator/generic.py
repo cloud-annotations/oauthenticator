@@ -82,16 +82,19 @@ class GenericOAuthenticator(OAuthenticator):
         params = dict(
             client_id=self.client_id,
             client_secret=self.client_secret,
-            redirect_uri=self.get_callback_url(handler),
-            code=code,
             grant_type='authorization_code',
+            redirect_uri=self.get_callback_url(handler),
+            state=handler.get_argument("state")
+            code=code,
         )
-        params.update(self.extra_params)
 
-        if self.token_url:
-            url = self.token_url
-        else:
-            raise ValueError("Please set the $OAUTH2_TOKEN_URL environment variable")
+        print(params)
+        # params.update(self.extra_params)
+
+        # if self.token_url:
+        #     url = self.token_url
+        # else:
+        #     raise ValueError("Please set the $OAUTH2_TOKEN_URL environment variable")
 
         headers = {
             "Accept": "application/json",
