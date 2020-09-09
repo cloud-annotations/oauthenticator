@@ -89,24 +89,12 @@ class GenericOAuthenticator(OAuthenticator):
         )
 
         print(params)
-        # params.update(self.extra_params)
-
-        # if self.token_url:
-        #     url = self.token_url
-        # else:
-        #     raise ValueError("Please set the $OAUTH2_TOKEN_URL environment variable")
-
-        headers = {
-            "Accept": "application/json",
-            "User-Agent": "JupyterHub",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        }
 
         req = HTTPRequest(
-            url,
+            self.token_url,
             method="POST",
-            headers=headers,
-            body=urllib.parse.urlencode(params, doseq=True, encoding='utf-8', safe='='),
+            headers=None,
+            body=urllib.parse.urlencode(params),
         )
 
         resp = await http_client.fetch(req)
