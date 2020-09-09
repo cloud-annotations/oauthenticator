@@ -84,7 +84,7 @@ class GenericOAuthenticator(OAuthenticator):
             client_secret=self.client_secret,
             grant_type='authorization_code',
             redirect_uri=self.get_callback_url(handler),
-            state=handler.get_argument("state")
+            state=handler.get_argument("state"),
             code=code,
         )
 
