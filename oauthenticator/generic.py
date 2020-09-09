@@ -76,13 +76,12 @@ class GenericOAuthenticator(OAuthenticator):
     async def authenticate(self, handler, data=None):
         code = handler.get_argument("code")
 
-        print("NICK WAZ HERE")
-        raise ValueError("NICK WAZ HERE")
-
         # TODO: Configure the curl_httpclient for tornado
         http_client = self.http_client()
 
         params = dict(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
             redirect_uri=self.get_callback_url(handler),
             code=code,
             grant_type='authorization_code',
@@ -94,19 +93,17 @@ class GenericOAuthenticator(OAuthenticator):
         else:
             raise ValueError("Please set the $OAUTH2_TOKEN_URL environment variable")
 
-        headers = {"Accept": "application/json", "User-Agent": "JupyterHub"}
-
-        if self.basic_auth:
-            b64key = base64.b64encode(
-                bytes("{}:{}".format(self.client_id, self.client_secret), "utf8")
-            )
-            headers.update({"Authorization": "Basic {}".format(b64key.decode("utf8"))})
+        headers = {
+            "Accept": "application/json",
+            "User-Agent": "JupyterHub",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        }
 
         req = HTTPRequest(
             url,
             method="POST",
             headers=headers,
-            body=urllib.parse.urlencode(params),
+            body=urllib.parse.urlencode(params, doseq=True, encoding='utf-8', safe='='),
         )
 
         resp = await http_client.fetch(req)
@@ -114,6 +111,8 @@ class GenericOAuthenticator(OAuthenticator):
         resp_json = json.loads(resp.body.decode('utf8', 'replace'))
 
         access_token = resp_json['access_token']
+        print(access_token)
+
         refresh_token = resp_json.get('refresh_token', None)
         token_type = resp_json['token_type']
         scope = resp_json.get('scope', '')
