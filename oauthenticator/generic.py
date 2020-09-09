@@ -88,8 +88,6 @@ class GenericOAuthenticator(OAuthenticator):
             code=code,
         )
 
-        print(params)
-
         req = HTTPRequest(
             self.token_url,
             method="POST",
@@ -102,7 +100,6 @@ class GenericOAuthenticator(OAuthenticator):
         resp_json = json.loads(resp.body.decode('utf8', 'replace'))
 
         access_token = resp_json['access_token']
-        print(access_token)
 
         refresh_token = resp_json.get('refresh_token', None)
         token_type = resp_json['token_type']
@@ -131,6 +128,8 @@ class GenericOAuthenticator(OAuthenticator):
         )
         resp = await http_client.fetch(req)
         resp_json = json.loads(resp.body.decode('utf8', 'replace'))
+
+        print(resp_json)
 
         if callable(self.username_key):
             name = self.username_key(resp_json)
